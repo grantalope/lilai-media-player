@@ -1,71 +1,45 @@
 <script>
-  import { Player, Ui, Video, DefaultControls } from '@vime/svelte';
-  let showVideo = true;
+  import { onMount } from 'svelte';
+  let players = [];
 
-  // The mediaId should be the actual identifier of the video or track being played.
-  // Here I've used a placeholder value.
-  let mediaId = 'abc123';
-
-  async function logPlayback() {
-    const response = await fetch('https://processplaybackdata.azurewebsites.net/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        userId: 'user123', // The ID of the user
-        mediaId: mediaId // The ID of the media being played
-      })
-    });
-
-    if (!response.ok) {
-      console.error('Failed to log playback:', response.statusText);
-    }
-  }
-
-  // Call this function when the media starts playing
-  logPlayback();
+  onMount(async () => {
+    const response = await fetch('characters.json');
+    players = await response.json();
+  });
 </script>
 
-<button on:click={() => showVideo = !showVideo}>
-  Toggle Player
-</button>
-
-{#if showVideo}
-  <main>
-    <h1>Welcome to Your Media Player</h1>
-    
-    <Player>
-      <Video poster="https://media.vimejs.com/poster.png">
-        <source data-src="https://media.vimejs.com/720p.mp4" type="video/mp4" />
-      </Video>
-      <Ui>
-        <DefaultControls />
-      </Ui>
-    </Player>
-  </main>
-{:else}
-  <iframe src="https://open.spotify.com/embed/track/1P8tISEFOeOmEsuFPTx5dZ" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-{/if}
-
 <style>
-  main {
+  .container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+
+  .player {
+    width: 300px;
+    margin: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
     text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
   }
 
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 2em;
-    font-weight: 100;
-  }
-
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
-    }
+  .player img {
+    width: 100%;
+    height: auto;
   }
 </style>
+
+<div class="container">
+  {#each players as player}
+    <div class="player">
+      <img src={player.avatar} alt={player.name} />
+      <h2>{player.name}</h2>
+      <p>{player.description}</p>
+      <p><strong>Role:</strong> {player.role}</p>
+    </div>
+  {/each}
+</div>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/28hLyn3dYE70ZOKye24IhI?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
