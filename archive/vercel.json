@@ -1,0 +1,7 @@
+{
+    "functions": {
+        "api/lilai_speech.py": {
+            "runtime": "python@3.9"
+        }
+    }
+}
